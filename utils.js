@@ -126,6 +126,50 @@ export class Utils {
 		return fn;
 	}
 
+	
+    /**
+     * Get element position relative to one of its parents
+     * @param el - element of which offset you want to get
+     * @param parentClass - class of parent from which you want to get offset
+     */
+    static getElementPosition(el, parentClass?) {
+	let xPos = 0;
+	let yPos = 0;
+	while (el) {
+	    if (el.classList && this.classCont(el, parentClass)) {
+		break;
+	    }
+		// special for body tag (browser compatibility)
+	    if (el.tagName == 'BODY') {
+		let xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+		let yScroll = el.scrollTop || document.documentElement.scrollTop;
+		xPos += (el.offsetLeft - xScroll + el.clientLeft);
+		yPos += (el.offsetTop - yScroll + el.clientTop);
+	    }
+	    else {
+		// for all other elements
+		xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+		yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+	    }
+	    if (
+		el.tagName == 'TD' || el.tagName == 'TH' ||
+		el.tagName == 'TR' ||
+		el.tagName == 'TBODY' || el.tagName == 'THEAD'
+	    ) {
+		el = this.findParents(el, false, 'table');
+	    }
+	    else {
+		el = el.offsetParent;
+	    }
+	    console.log(el);
+	}
+	console.log(xPos, yPos);
+	return {
+	  x: xPos,
+	  y: yPos
+	};
+    }
+	
 	//- ### ### ### SLIDE TOGGLE
 	static slideToggle(selector, speed) {
 		let ths = typeof selector !== 'object' ? document.querySelector(selector) : selector.firstElementChild,
